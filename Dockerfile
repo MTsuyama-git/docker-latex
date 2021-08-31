@@ -4,7 +4,7 @@ ENV MANPATH /usr/local/texlive/2021/texmf-dist/doc/man:$MANPATH
 ENV INFOPATH /usr/local/texlive/2021/texmf-dist/doc/info:$INFOPATH
 ENV LATEX_ROOT=\\/usr\\/local\\/texlive\\/2021\\/bin\\/x86_64-linuxmusl
 ENV TGIF_ROOT=\\/usr\\/local\\/bin
-RUN apk add --no-cache imagemagick ghostscript perl fontconfig-dev freetype-dev curl make libxt libx11 libxext libxmu &&\
+RUN apk add --no-cache imagemagick ghostscript perl fontconfig-dev freetype-dev curl make libxt libx11 libxext libxmu poppler-utils &&\
     apk add --no-cache --virtual .fetch-deps xz tar build-base util-linux-dev libx11-dev libxt-dev libxext-dev libxmu-dev &&\
     mkdir /tmp/install-tl-unx &&\
     curl -L https://ftp.kddilabs.jp/CTAN/systems/texlive/tlnet/install-tl-unx.tar.gz |\
@@ -37,7 +37,8 @@ RUN apk add --no-cache imagemagick ghostscript perl fontconfig-dev freetype-dev 
     sed -e 's/\($latex_command='\''\).*\('\''\)/\1'$LATEX_ROOT'\/platex\2/g' /tmp/tgif2tex/tgif2tex |\
     sed -e 's/\($dvips_command='\''\).*\('\''\)/\1'$LATEX_ROOT'\/dvips\2/g'  |\
     sed -e 's/\($tgif_command='\''\).*\('\''\)/\1'$TGIF_ROOT'\/tgif\2/g'  > /usr/local/bin/tgif2tex &&\
-    chmod a+x /usr/local/bin/tgif2tex
+    chmod a+x /usr/local/bin/tgif2tex &&\
+    sed -i -e 's/\(\/Times-Roman\)/% \1/' $(find  /usr/share/ghostscript/ -name gs_pdfwr.ps)
  
 WORKDIR /workdir
 
